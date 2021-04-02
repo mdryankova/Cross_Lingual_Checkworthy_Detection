@@ -1,0 +1,16 @@
+python -m experiment \
+--train \
+--train_batch_size 8 \
+--test_batch_size 1 \
+--output_dir trained_models/sentence_transformer_baseline \
+--tokenizer sentence-transformers/quora-distilbert-multilingual \
+--pretrained_model sentence-transformers/quora-distilbert-multilingual \
+--lang english \
+--cuda \
+--lr 2e-4 \
+--epochs 3 \
+--adam_epsilon 1e-8 \
+--num_labels 2 \
+--max_seq_len 128 \
+--dropout 0.1 \
+--clef_filename sentence_transformer_en_dev.tsv
