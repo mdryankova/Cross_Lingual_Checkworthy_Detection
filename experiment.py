@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 from pathlib import Path
 from reader.transformer_reader import CheckWorthyDetectionTask
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, ConcatDataset
 from sklearn.metrics import classification_report, confusion_matrix
 import torch
 import numpy as np
@@ -22,20 +22,27 @@ def train(args):
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    lang = args.lang[0]
-    train_path = DATASET_PATHS[lang]['train']
-    train_dataset = CheckWorthyDetectionTask(train_path, lang, tokenizer_name=args.tokenizer,
-                                             max_seq_len=args.max_seq_len)
-    train_data_loader = DataLoader(dataset=train_dataset, batch_size=args.train_batch_size, shuffle=True,
+    langs = args.lang
+
+    train_datasets = []
+    for lang in langs:
+        train_path = DATASET_PATHS[lang]['train']
+        train_dataset = CheckWorthyDetectionTask(train_path, lang, tokenizer_name=args.tokenizer,
+                                                 max_seq_len=args.max_seq_len)
+
+        train_datasets.append(train_dataset)
+
+    train_datasets = ConcatDataset(train_datasets)
+
+    train_data_loader = DataLoader(dataset=train_datasets, batch_size=args.train_batch_size, shuffle=True,
                                    drop_last=True)
 
-    model = TRANSFORMER_MODELS['sentence_transformer'](args)
+    model_name = args.model
+    model = TRANSFORMER_MODELS[model_name](args)
     model.transformer.resize_token_embeddings(len(train_dataset.tokenizer))
 
     # save model
-    saved_folder = output_dir / f'{args.lang}_sentence_transformer.pt'
-
-    print(saved_folder)
+    saved_folder = output_dir / f'{args.lang}_{model_name}.pt'
 
     if not saved_folder.exists():
         trainer = Trainer(args)
@@ -46,43 +53,44 @@ def train(args):
             torch.cuda.empty_cache()
         del model
 
-    valid_path = DATASET_PATHS[lang]['dev']
-    valid_dataset = CheckWorthyDetectionTask(valid_path, lang, tokenizer_name=args.tokenizer,
-                                             max_seq_len=args.max_seq_len)
-    valid_data_loader = DataLoader(dataset=valid_dataset, batch_size=args.test_batch_size, shuffle=False)
-
-    model = TRANSFORMER_MODELS['sentence_transformer'](args)
+    model = TRANSFORMER_MODELS[model_name](args)
     trainer = Trainer(args)
-    model.transformer.resize_token_embeddings(len(valid_dataset.tokenizer))
-
+    model.transformer.resize_token_embeddings(len(train_dataset.tokenizer))
     if args.cuda:
         model.to(torch.device('cuda'))
 
     model.load_state_dict(torch.load(saved_folder))
-    results = trainer.test(dataloader=valid_data_loader, model=model)
 
-    preds = results['labels']
-    targs = results['targets']
-    probs = results['probs']
+    for lang in langs:
+        valid_path = DATASET_PATHS[lang]['dev']
+        valid_dataset = CheckWorthyDetectionTask(valid_path, lang, tokenizer_name=args.tokenizer,
+                                                 max_seq_len=args.max_seq_len)
 
-    print(f'CLASSIFICATION REPORT VALIDATION')
-    print(classification_report(y_true=targs, y_pred=preds, digits=4))
-    print(f'CONFUSION MATRIX VALIDATION')
-    print(confusion_matrix(y_true=targs, y_pred=preds))
-    print('Probs')
-    print(probs)
-    print('Preds')
-    print(preds)
-    print('Targets')
-    print(targs)
+        valid_data_loader = DataLoader(dataset=valid_dataset, batch_size=args.test_batch_size, shuffle=False)
+        results = trainer.test(dataloader=valid_data_loader, model=model)
 
-    model_name = f'{args.lang}_sentence_transformer'
-    results_out = Path(args.output_dir) / args.clef_filename
-    tweet_ids = results['tweet_ids']
-    with open(results_out, 'w', newline='') as csvfile:
-        reswriter = csv.writer(csvfile, delimiter='\t')
-        for idx, topic in enumerate(results['topics']):
-            reswriter.writerow([topic, tweet_ids[idx], probs[idx], model_name])
+        preds = results['labels']
+        targs = results['targets']
+        probs = results['probs']
+
+        print(f'CLASSIFICATION REPORT VALIDATION {lang}')
+        print(classification_report(y_true=targs, y_pred=preds, digits=4))
+        print(f'CONFUSION MATRIX VALIDATION')
+        print(confusion_matrix(y_true=targs, y_pred=preds))
+        print('Probs')
+        print(probs)
+        print('Preds')
+        print(preds)
+        print('Targets')
+        print(targs)
+
+        model_name = f'{lang}_{args.mode}_{model_name}'
+        results_out = Path(args.output_dir) / f'{model_name}.tsv'
+        tweet_ids = results['tweet_ids']
+        with open(results_out, 'w', newline='') as csvfile:
+            reswriter = csv.writer(csvfile, delimiter='\t')
+            for idx, topic in enumerate(results['topics']):
+                reswriter.writerow([topic, tweet_ids[idx], probs[idx], model_name])
 
 
 if __name__ == '__main__':
@@ -110,6 +118,7 @@ if __name__ == '__main__':
     parser.add_argument('--lang', nargs='+', type=str)
     parser.add_argument('--adam_epsilon', type=float)
     parser.add_argument('--clef_filename', type=str)
+    parser.add_argument('--mode', type=str)
     args = parser.parse_args()
 
     if args.train:
