@@ -19,10 +19,17 @@
 #-d data/subtask-1a--turkish/normalized/dataset_dev_v1_turkish.tsv \
 #--target_dir trained_models
 
-echo Results for the Spanish Dataset
-python -m baselines.subtask_1a \
--l spanish \
--t data/subtask-1a--spanish/normalized/dataset_train.tsv \
--d data/subtask-1a--spanish/normalized/dataset_dev.tsv \
---target_dir trained_models
+#echo Results for the Spanish Dataset
+#python -m baselines.subtask_1a \
+#-l spanish \
+#-t data/subtask-1a--spanish/normalized/dataset_train.tsv \
+#-d data/subtask-1a--spanish/normalized/dataset_dev.tsv \
+#--target_dir trained_models
+
+#echo Results for the Arabic Dataset
+#python -m baselines.subtask_1a \
+#-l arabic \
+#-t data/subtask-1a--arabic/normalized/train.tsv \
+#-d data/subtask-1a--arabic/normalized/dev.tsv \
+#--target_dir trained_models
 
