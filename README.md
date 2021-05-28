@@ -1,5 +1,5 @@
 # Mitigating Cultural Differences for Identifying Multi-lingual Checkworthy Claims
-![software_image](image/Multi-language Checkworthy Detection.png)
+![software_image](https://github.com/isspek/Cross_Lingual_Checkworthy_Detection/blob/a452eec05589b18abc5f8fb533df82b118336596/image/Multi-language%20Checkworthy%20Detection.png)
 
 This repository contains source codes of the submission to  CLEF2021-CheckThat! Task 1. We propose language identification task as an auxilary task to mitigate cultural bias across the languages.
 
