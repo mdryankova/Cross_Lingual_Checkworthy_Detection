@@ -1,3 +1,15 @@
+# Mitigating Cultural Differences for Identifying Multi-lingual Checkworthy Claims
+![software_image](image/Multi-language Checkworthy Detection.png)
+
+This repository contains source codes of the submission to  CLEF2021-CheckThat! Task 1. We propose language identification task as an auxilary task to mitigate cultural bias across the languages.
+
+
+Paper is soon...
+
+```bibtex
+```
+
+
 # Task 1: Check-Worthiness Estimation
 
 This repository contains the _dataset_, _format checker, scorer and baselines_ for the [CLEF2021-CheckThat! Task 1](https://sites.google.com/view/clef2021-checkthat/tasks/task-1-check-worthiness-estimation). 
