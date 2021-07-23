@@ -4,9 +4,16 @@
 This repository contains source codes of the submission to  CLEF2021-CheckThat! Task 1. We propose language identification task as an auxilary task to mitigate cultural bias across the languages.
 
 
-Paper is soon...
+If you use our work, please use following bib entry:
 
 ```bibtex
+@inproceedings{SchlichtEtAl:CLEF-2021,
+title = {UPV at CheckThat! 2021: Mitigating Cultural Differences for Identifying Multilingual Check-worthy Claims},
+author = {Ipek Baris Schlicht and Angel Felipe Magnossão de Paula and Paolo Rosso},
+pages = {465--475},
+url = {http://ceur-ws.org/Vol-XXX/#paper-36},
+crossref = {CLEF-2021},
+}
 ```
 
 
