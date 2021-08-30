@@ -11,7 +11,7 @@ If you use our work, please use following bib entry:
 title = {UPV at CheckThat! 2021: Mitigating Cultural Differences for Identifying Multilingual Check-worthy Claims},
 author = {Ipek Baris Schlicht and Angel Felipe Magnossão de Paula and Paolo Rosso},
 pages = {465--475},
-url = {http://ceur-ws.org/Vol-XXX/#paper-36},
+url = {http://ceur-ws.org/Vol-2936/#paper-36},
 crossref = {CLEF-2021},
 }
 ```
