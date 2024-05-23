@@ -41,8 +41,8 @@ class CheckWorthyDetectionTask(torch.utils.data.Dataset):
                                               return_tensors='pt'  # Return pytorch tensors.
                                               )
         encoded_lang = LANGS_IDS[self.lang]
-        if 'check_worthiness' in row:
-            label=row['check_worthiness']
+        if 'class_label' in row:
+            label=row['class_label']
             return dict(
                 input_ids=encoding['input_ids'],
                 attention_mask=encoding['attention_mask'],
